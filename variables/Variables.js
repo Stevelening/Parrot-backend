@@ -3,7 +3,7 @@
 const Variable = {
     // pour le serveur 
     HOST: '0.0.0.0',
-    PORT: '5000',
+    PORT: process.env.PORT || '5000',
     // pour la bd
     DB_NAME: 'parrot',
     USER_NAME: 'doadmin',
