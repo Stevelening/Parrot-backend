@@ -41,6 +41,33 @@ async function checkUser(username, password) {
                 phonenumber = res.dataValues.phonenumber
                 emailaddress = res.dataValues.emailaddress
             }
+
+            if(id == undefined || phonenumber == undefined){
+                //on retourne une erreur
+                res.send({})// on renvoi une erreur
+                console.log('utilisateur inexistant')
+            }
+            else{
+                if(!req.session.user){
+                    req.session.user = {
+                        id: id,
+                        emailaddress: emailaddress,
+                        username: username
+                    }
+                    // req.session.sessionid = id.toString(10)+phonenumber.toString(10);
+                    // req.session.userid = id
+                    // req.session.username = username
+                    console.log(`Vous etes connectes, bienvenue ${req.session.user.username} !`)
+                    console.log(req.session)
+                }
+                else{
+                    console.log('vous etiez deja connectes')
+                    console.log(req.session) 
+                }
+                //on renvoi le resultat (on ne lui envoi pas le password)
+                res.send({'id': id, 'username': username, 'phonenumber': phonenumber,'emailaddress': emailaddress})
+            }
+
         }).catch((error)=>{
             console.error("Echec de recherche des utilisateurs", error)
         })
@@ -59,36 +86,6 @@ router.post('/', (req, res, next)=>{
  
     // on verifie si cet utilisateur existe dans la BD (on hache le mot de passe)
     checkUser(username, md5(password))
-
-    // on renvoie le resultat de la requete au client
-    setTimeout(()=>{
-        // on va juste patienter 50 millisecondes pour que le resultat de la requete soit disponible
-        if(id == undefined || phonenumber == undefined){
-            //on retourne une erreur
-            res.send({})// on renvoi une erreur
-            console.log('utilisateur inexistant')
-        }
-        else{
-            if(!req.session.user){
-                req.session.user = {
-                    id: id,
-                    emailaddress: emailaddress,
-                    username: username
-                }
-                // req.session.sessionid = id.toString(10)+phonenumber.toString(10);
-                // req.session.userid = id
-                // req.session.username = username
-                console.log(`Vous etes connectes, bienvenue ${req.session.user.username} !`)
-                console.log(req.session)
-            }
-            else{
-                console.log('vous etiez deja connectes')
-                console.log(req.session) 
-            }
-            //on renvoi le resultat (on ne lui envoi pas le password)
-            res.send({'id': id, 'username': username, 'phonenumber': phonenumber,'emailaddress': emailaddress})
-        }
-    }, 1000)
 
 })
 
