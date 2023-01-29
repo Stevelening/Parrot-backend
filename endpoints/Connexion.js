@@ -88,7 +88,7 @@ router.post('/', (req, res, next)=>{
             //on renvoi le resultat (on ne lui envoi pas le password)
             res.send({'id': id, 'username': username, 'phonenumber': phonenumber,'emailaddress': emailaddress})
         }
-    }, 500)
+    }, 1000)
 
 })
 
