@@ -23,23 +23,33 @@ let id
 let phonenumber
 let emailaddress
 
-async function checkUser(username, password) {
+
+router.post('/', async (req, res, next)=>{
+    // on recupere le corps de la requete post
+    username = req.body.username
+    password = req.body.password
+    console.log('\n', req.body)
+ 
+    // on verifie si cet utilisateur existe dans la BD (on hache le mot de passe)
+    //checkUser(username, md5(password),req, res)
+
     id = undefined
     phonenumber = undefined
+
     const resp = await sequelize.sync().then(()=>{
         console.log('Table user cree avec succes')
         // Selectionner un utilisateur en particulier avec son username et password
         User.findOne({
             where: {
                 username: username,
-                password: password
+                password: md5(password)
             }
-        }).then((res)=>{
-            console.log(res)
-            if(res != null){
-                id = res.dataValues.id
-                phonenumber = res.dataValues.phonenumber
-                emailaddress = res.dataValues.emailaddress
+        }).then((result)=>{
+            console.log(result)
+            if(result != null){
+                id = result.dataValues.id
+                phonenumber = result.dataValues.phonenumber
+                emailaddress = result.dataValues.emailaddress
             }
 
             if(id == undefined || phonenumber == undefined){
@@ -75,17 +85,6 @@ async function checkUser(username, password) {
     }).catch((error)=>{
         console.error('Impossible de creer cette table')
     })
-
-}
-
-router.post('/', (req, res, next)=>{
-    // on recupere le corps de la requete post
-    username = req.body.username
-    password = req.body.password
-    console.log('\n', req.body)
- 
-    // on verifie si cet utilisateur existe dans la BD (on hache le mot de passe)
-    checkUser(username, md5(password))
 
 })
 
