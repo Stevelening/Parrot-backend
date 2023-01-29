@@ -2,7 +2,7 @@
 // on cree cette variable qui contiendra le host et le port sur lesquels sont lances notre serveur
 const Variable = {
     // pour le serveur 
-    HOST: '127.0.0.1',
+    HOST: '0.0.0.0',
     PORT: '5000',
     // pour la bd
     DB_NAME: 'parrot',
