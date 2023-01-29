@@ -22,34 +22,6 @@ let id
 let phonenumber
 let emailaddress
 
-async function checkUser(phonenumber) {
-    id = undefined
-    username = undefined
-    const resp = await sequelize.sync().then(()=>{
-        console.log('Table user cree avec succes')
-        // Selectionner un utilisateur en particulier avec son username et password
-        User.findOne({
-            where: {
-                phonenumber: phonenumber
-            }
-        }).then((res)=>{
-            console.log(res)
-            if(res != null){
-                id = res.dataValues.id
-                username = res.dataValues.username
-                password = res.dataValues.password
-                emailaddress = res.dataValues.emailaddress
-                console.log('elements crees')
-            }
-        }).catch((error)=>{
-            console.error("Echec de recherche des utilisateurs", error)
-        })
-    
-    }).catch((error)=>{
-        console.error('Impossible de creer cette table')
-    })
-
-}
 
 let Random = (min, max) =>{
     // retouren un nombre aleatoire entre min et max
@@ -60,48 +32,69 @@ let Random = (min, max) =>{
     return code 
 }
 
-router.post('/', (req, res, next)=>{
+router.post('/', async (req, res, next)=>{
     // on recupere le corps de la requete post
     phonenumber = req.body.phoneNumber
     console.log('\n', req.body)
 
     console.log('phonenumber :', phonenumber)
 
-    // on recupere les informations correspondant de la base de donnees
-    checkUser(parseInt(phonenumber))
+    
+    id = undefined
+    username = undefined
 
-    // on renvoie le resultat de la requete au client
-    setTimeout(()=>{
-        // on va juste patienter 50 millisecondes pour que le resultat de la requete soit disponible
-        if(id == undefined || username == undefined){
-            //on retourne une erreur
-            res.send({})// on renvoi une erreur
-            console.log('utilisateur inexistant')
-        }
-        else{
-            code = Random(1, 10)//on genere le code a 04 chiffres
-            console.log('code genere :', code)
-            // on ajoute le code a la session
-            req.session.user = {
-                id: id,
-                emailaddress: emailaddress,
-                username: username,
-                code: code
+    const resp = await sequelize.sync().then(()=>{
+        console.log('Table user cree avec succes')
+        // Selectionner un utilisateur en particulier avec son username et password
+        User.findOne({
+            where: {
+                phonenumber: phonenumber
             }
-            console.log(req.session)
-            console.log('l\'id de la session est :', req.sessionID)
-            // on lui envoi le code par email
-            sendEmail(emailaddress, code)
-            // on patiente un peu
-            setTimeout(()=>{console.log('envoi de mail en cours ...')}, 4000)
-            // on enregistre le code dans la BD
-            createCode(code)
-            // on patiente un peu
-            setTimeout(()=>{console.log('enregistrement du code en cours ...')}, 100)
-            //on renvoi le resultat (on ne lui envoi pas le password)
-            res.send({'id': id, 'username': username, 'phonenumber': phonenumber,'emailaddress': emailaddress})
-        }
-    }, 100)
+        }).then((result)=>{
+            console.log(result)
+            if(result != null){
+                id = result.dataValues.id
+                username = result.dataValues.username
+                password = result.dataValues.password
+                emailaddress = result.dataValues.emailaddress
+                console.log('elements crees')
+            }
+
+            if(id == undefined || username == undefined){
+                //on retourne une erreur
+                res.send({})// on renvoi une erreur
+                console.log('utilisateur inexistant')
+            }
+            else{
+                code = Random(1, 10)//on genere le code a 04 chiffres
+                console.log('code genere :', code)
+                // on ajoute le code a la session
+                req.session.user = {
+                    id: id,
+                    emailaddress: emailaddress,
+                    username: username,
+                    code: code
+                }
+                console.log(req.session)
+                console.log('l\'id de la session est :', req.sessionID)
+                // on lui envoi le code par email
+                sendEmail(emailaddress, code)
+                // on patiente un peu
+                setTimeout(()=>{console.log('envoi de mail en cours ...')}, 4000)
+                // on enregistre le code dans la BD
+                createCode(code)
+                // on patiente un peu
+                setTimeout(()=>{console.log('enregistrement du code en cours ...')}, 100)
+                //on renvoi le resultat (on ne lui envoi pas le password)
+                res.send({'id': id, 'username': username, 'phonenumber': phonenumber,'emailaddress': emailaddress})
+            }
+        }).catch((error)=>{
+            console.error("Echec de recherche des utilisateurs", error)
+        })
+    
+    }).catch((error)=>{
+        console.error('Impossible de creer cette table')
+    })
 
 })
 

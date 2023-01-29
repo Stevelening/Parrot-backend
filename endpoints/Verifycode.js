@@ -22,7 +22,7 @@ async function deleteCode(code){
     await sequelize.sync().then(()=>{
         Code.destroy({
             where: { code: code },
-        }).then((res)=>{
+        }).then((result1)=>{
             console.log('supression reussie')
         }).catch((error)=>{
             console.error("Echec de la suppression", error)
@@ -40,8 +40,8 @@ async function checkCode(code){
             where: {
                 code: code
             }
-        }).then((res)=>{
-            if(res != null){
+        }).then((result)=>{
+            if(result != null){
                 console.log('on entre ici !')
                 status = true
                 console.log('status :', status)
@@ -63,14 +63,14 @@ async function getUser(id) {
             where: {
                 id: id
             }
-        }).then((res)=>{
+        }).then((result2)=>{
             //setTimeout(()=>{}, 100)
-            console.log(res[0].dataValues)
-            if(res != null){
-                username = res[0].dataValues.username
-                password = res[0].dataValues.password
-                phonenumber = res[0].dataValues.phonenumber
-                emailaddress = res[0].dataValues.emailaddress
+            console.log(result2[0].dataValues)
+            if(result2 != null){
+                username = result2[0].dataValues.username
+                password = result2[0].dataValues.password
+                phonenumber = result2[0].dataValues.phonenumber
+                emailaddress = result2[0].dataValues.emailaddress
                 console.log('user OK')
             }
         }).catch((error)=>{
@@ -83,7 +83,7 @@ async function getUser(id) {
 
 }
 
-router.post('/', (req, res, next)=>{
+router.post('/', async (req, res, next)=>{
     // on verifie que le code envoye correspond
     console.log('req.body :', req.body)
     console.log('l\'id de la session est :', req.sessionID)
