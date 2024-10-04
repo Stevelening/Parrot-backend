@@ -1,1 +1,3 @@
-# parrot-backend
+# Parrot-backend
+
+Il s'agit du backend d'une application de messagerie style réseau social avec les chats privés, des groupes, etc...
